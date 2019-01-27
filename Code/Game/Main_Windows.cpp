@@ -83,6 +83,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 			case F6_KEY:
 			case F7_KEY:
 			case F8_KEY:
+			case ENTER_KEY:
 				//F8 Key
 				g_theApp->HandleKeyPressed(asKey);
 				return 0;

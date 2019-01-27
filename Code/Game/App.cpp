@@ -11,7 +11,6 @@
 #include "Engine/Core/EventSystems.hpp"
 
 App* g_theApp = nullptr;
-//extern InputSystem* g_inputSystem;
 
 //------------------------------------------------------------------------------------------------------------------------------
 App::App()
@@ -168,15 +167,7 @@ bool App::HandleKeyPressed(unsigned char keyCode)
 	switch(keyCode)
 	{
 	case T_KEY:
-		//Implement code to slow down the ship (deltaTime /= 10)
-		m_isSlowMo = true;
-		return true;
-	break;
-	case  P_KEY:
-		//Implement code to pause game (deltaTime = 0)
-		m_isPaused = !m_isPaused;
-		return true;
-	break;
+	case P_KEY:
 	case UP_ARROW:
 	case RIGHT_ARROW:
 	case LEFT_ARROW:	
@@ -190,6 +181,7 @@ bool App::HandleKeyPressed(unsigned char keyCode)
 	case F6_KEY:
 	case F7_KEY:
 	case SPACE_KEY:
+	case ENTER_KEY:
 		m_game->HandleKeyPressed(keyCode);
 		return true;
 	break;
@@ -213,14 +205,10 @@ bool App::HandleKeyReleased(unsigned char keyCode)
 	switch(keyCode)
 	{
 	case 'T':
-		//Implement code to return deltaTime to original value
-		m_isSlowMo = false;
-		return true;
+	return true;
 	break;
 	case  'P':
-		//Implement code to un-pause game
-		m_isPaused = false;
-		return true;
+	return true;
 	break;
 	case 38:
 	case 32:

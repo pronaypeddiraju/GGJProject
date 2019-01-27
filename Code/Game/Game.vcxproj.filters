@@ -8,6 +8,12 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="DataDriver">
+      <UniqueIdentifier>{7acba544-376c-4677-a7f5-361642e2f19b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Decisions">
+      <UniqueIdentifier>{9d900bbc-16ae-42a8-a916-68ea59ca78b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -21,6 +27,15 @@
     </ClCompile>
     <ClCompile Include="Main_Windows.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="DataDriver\DataDriver.cpp">
+      <Filter>DataDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="Decisions\Decisions.cpp">
+      <Filter>Decisions</Filter>
+    </ClCompile>
+    <ClCompile Include="DecisionSequence.cpp">
+      <Filter>Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -37,6 +52,15 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="EngineBuildPreferences.hpp">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="DataDriver\DataDriver.hpp">
+      <Filter>DataDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="Decisions\Decisions.hpp">
+      <Filter>Decisions</Filter>
+    </ClInclude>
+    <ClInclude Include="DecisionSequence.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,6 +12,8 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/EventSystems.hpp"
+#include "Engine/Core/Time.hpp"
+#include "Game/DecisionSequence.hpp"
 
 //Create Camera and set to null 
 Camera *g_mainCamera = nullptr; 
@@ -27,18 +29,7 @@ bool g_debugMode = false;
 Game::Game()
 {
 	m_isGameAlive = true;
-	m_testAudioID = g_audio->CreateOrGetSound("Data/Audio/UproarLilWayne.mp3");
-
-	m_textureTest = g_renderContext->CreateOrGetTextureFromFile("Data/Images/Test_StbiFlippedAndOpenGL.png");
-	m_testImage = new Image("Data/Images/Test_StbiFlippedAndOpenGL.png");
-	m_spriteTest = g_renderContext->CreateOrGetTextureFromFile("Data/Images/Test_SpriteSheet8x2.png");
 	m_squirrelFont = g_renderContext->CreateOrGetBitmapFontFromFile("SquirrelFixedFont");
-
-	m_explosionTexture = g_renderContext->CreateOrGetTextureFromFile("Data/Images/Explosion_5x5.png");
-	SpriteSheet* explosionSheet = new SpriteSheet(m_explosionTexture, IntVec2(5,5));
-	m_explosionPingPong = new SpriteAnimDefenition(*explosionSheet, 0, 24, 1.f, SPRITE_ANIM_PLAYBACK_PINGPONG);
-	m_explosionOnce = new SpriteAnimDefenition(*explosionSheet, 0, 24, 2.0f, SPRITE_ANIM_PLAYBACK_ONCE);
-	m_explosionLoop = new SpriteAnimDefenition(*explosionSheet, 0, 24, 0.5f, SPRITE_ANIM_PLAYBACK_LOOP);
 
 	g_devConsole->SetBitmapFont(*m_squirrelFont);
 }
@@ -51,14 +42,8 @@ Game::~Game()
 void Game::StartUp()
 {
 	//Create the Camera and setOrthoView
-	g_clearScreenColor = new Rgba(0.f, 0.f, 0.5f, 1.f);
-	
-	g_devConsole->PrintString(Rgba::BLUE, "this is a test string");
-	g_devConsole->PrintString(Rgba::RED, "this is also a test string");
-	g_devConsole->PrintString(Rgba::GREEN, "damn this dev console lit!");
-	g_devConsole->PrintString(Rgba::WHITE, "Last thing I printed");
-
-	g_eventSystem->SubscribeEventCallBackFn("TestEvent", TestEvent);
+	g_clearScreenColor = new Rgba(0.f, 0.f, 0.f, 1.f);
+	m_animTime = 0.f;
 }
 
 STATIC bool Game::TestEvent(EventArgs& args)
@@ -80,35 +65,30 @@ void Game::HandleKeyPressed(unsigned char keyCode)
 	case N_KEY:
 	break;
 	case F1_KEY:
-	//m_testPlayback = g_audio->PlaySound(m_testAudioID);
 	break;
 	case F2_KEY:
-	//Set playback speed to 0
-	//g_audio->SetSoundPlaybackSpeed(m_testPlayback, 0.0f);
 	break;
 	case F3_KEY:
-	//Set playback speed back to 1
-	//g_audio->SetSoundPlaybackSpeed(m_testPlayback, 1.0f);
 	break;
 	case F4_KEY:
-	//Set volume back to 1
-	//g_audio->SetSoundPlaybackVolume(m_testPlayback, 1.0f);
-	//Unsub test
-	g_eventSystem->UnsubscribeEventCallBackFn("TestEvent", TestEvent);
 	break;
 	case F5_KEY:
-	//Set volume to 0
-	//g_audio->SetSoundPlaybackVolume(m_testPlayback, 0.0f);
-	//Help Debug
-	g_eventSystem->FireEvent("Help");
 	break;
 	case F6_KEY:
-	//Fire event
-	g_eventSystem->FireEvent("TestEvent");
 	break;
 	case F7_KEY:
-	//Quit Debug
-	g_eventSystem->FireEvent("Quit");
+	break;
+	case ENTER_KEY:
+	if(m_animTime > 2.0f)
+	{
+		m_gameInitiated = true;
+		m_splashEnabled = false;
+		m_decisionSequence = new DecisionSequence();
+	}
+	else
+	{
+		//Do nothing here
+	}
 	break;
 	default:
 	break;
@@ -124,13 +104,11 @@ void Game::DebugEnabled()
 
 void Game::HandleKeyReleased(unsigned char keyCode)
 {
-	//SoundID testSound = g_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
 	switch( keyCode )
 	{
 	case UP_ARROW:
 	case RIGHT_ARROW:
 	case LEFT_ARROW:
-	//g_audio->PlaySound( m_testAudioID );
 	break;
 	default:
 	break;
@@ -142,24 +120,24 @@ void Game::Render() const
 	g_renderContext->ClearScreen(*g_clearScreenColor);
 
 	g_renderContext->BeginCamera(*g_mainCamera);
-
 	g_renderContext->BindTexture(nullptr);
-	DebugRender();
 
-	if(!m_consoleDebugOnce)
+	if(m_splashEnabled)
 	{
-		EventArgs* args = new EventArgs("TestString", "This is a test");
-		g_devConsole->Command_Test(*args);
-		g_devConsole->ExecuteCommandLine("Exec Health=25");
-		g_devConsole->ExecuteCommandLine("Exec Health=85 Armor=100");
+		//Call splash screen
+		SplashSequence();
 	}
-
-	g_devConsole->Render(*g_renderContext, *g_mainCamera, DEVCONSOLE_LINE_HEIGHT);
-	g_renderContext->BindTexture(nullptr);
+	else
+	{
+		//Run game decision system here
+		m_decisionSequence->Render();
+	}
 
 	g_renderContext->EndCamera(*g_mainCamera);
 
 }
+
+
 
 void Game::PostRender()
 {
@@ -167,8 +145,28 @@ void Game::PostRender()
 	m_consoleDebugOnce = true;
 }
 
+void Game::SplashSequence() const
+{
+	std::vector<Vertex_PCU> fontVerts;
+	
+	m_squirrelFont->AddVertsForTextInBox2D(fontVerts, AABB2(Vec2(25.f, 45.f), Vec2(175.f, 55.f)), 10.f, "24 HOURS IN MANALI", Rgba::YELLOW);
+
+	if(m_animTime > 2.0f)
+	{
+		float time = static_cast<float>(GetCurrentTimeSeconds());
+		float alphaModifier = (sin(time) + 1.f) * 0.5f;
+		m_squirrelFont->AddVertsForTextInBox2D(fontVerts, AABB2(Vec2(25.f, 30.f), Vec2(175.f, 35.f)), 3.f, "Press Enter to Continue!", Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, alphaModifier);
+	}
+
+	g_renderContext->BindTexture(m_squirrelFont->GetTexture());
+	g_renderContext->DrawVertexArray(fontVerts);
+
+	g_renderContext->BindTexture(nullptr);
+}
+
 void Game::DebugRenderTextures() const
 {
+	/*
 	//Test to see if textures render
 	g_renderContext->BindTexture(m_textureTest);
 	g_renderContext->SetBlendMode(BLEND_MODE_ALPHA);
@@ -182,10 +180,12 @@ void Game::DebugRenderTextures() const
 	boxVerts.push_back(Vertex_PCU(Vec3(100.f,100.f,0.f), Rgba(1.f,1.f,1.f,1.f), Vec2(1.f,1.f)));
 	//addVertsForAABB2(boxVerts, box1Bounds, Rgba(1.f,1.f,0.f));
 	g_renderContext->DrawVertexArray(6, &boxVerts[0]);	//boxVerts.size()
+	*/
 }
 
 void Game::DebugRenderSprites() const
 {
+	/*
 	g_renderContext->BindTexture(m_spriteTest);
 	//Test to see if sprites render
 	SpriteSheet testSheet = SpriteSheet(m_spriteTest, IntVec2(8,2));
@@ -198,10 +198,13 @@ void Game::DebugRenderSprites() const
 	std::vector<Vertex_PCU> spriteVerts;
 	AddVertsForAABB2D(spriteVerts, box, Rgba(1.f, 1.f, 1.f, 1.f), uvAtBottomLeft, uvAtTopRight);
 	g_renderContext->DrawVertexArray(spriteVerts);
+	*/
+
 }
 
 void Game::DebugRenderSpriteAnims() const
 {
+	/*
 	//Sprite animation test
 	
 	Vec2 uvAtBottomLeft = Vec2::ZERO;
@@ -233,11 +236,12 @@ void Game::DebugRenderSpriteAnims() const
 	g_renderContext->DrawVertexArray(animVertsPingPong);
 	g_renderContext->DrawVertexArray(animVertsOnce);
 	g_renderContext->DrawVertexArray(animVertsLoop);
-
+	*/
 }
 
 void Game::DebugRenderTextAlignment() const
 {
+	/*
 	g_renderContext->BindTexture(nullptr);
 	g_renderContext->SetBlendMode(BLEND_MODE_ALPHA);
 
@@ -323,6 +327,7 @@ void Game::DebugRenderTextAlignment() const
 	m_squirrelFont->AddVertsForTextInBox2D(fontVerts, AABB2(Vec2(150.f, 10.f), Vec2(180.f, 40.f)), 5.f, "Align Text", Rgba::RED, 1.f, Vec2::ALIGN_RIGHT_BOTTOM, TEXT_BOX_MODE_SHRINK);
 	g_renderContext->DrawVertexArray(fontVerts);
 	fontVerts.clear();
+	*/
 }
 
 void Game::DebugRender() const
@@ -342,11 +347,13 @@ void Game::Update( float deltaTime )
 {
 	UpdateCamera(deltaTime);
 
-	CheckXboxInputs();
+	//CheckXboxInputs();
 	m_animTime += deltaTime;
-	CheckCollisions();
 
-	ClearGarbageEntities();	
+	if(m_gameInitiated)
+	{
+		m_decisionSequence->UpdateDS(deltaTime);
+	}
 }
 
 void Game::UpdateCamera(float deltaTime)
@@ -375,8 +382,6 @@ void Game::UpdateCamera(float deltaTime)
 	translate2D.ClampLength(MAX_SHAKE);
 	g_mainCamera->Translate2D(translate2D);
 }
-
-
 
 void Game::ClearGarbageEntities()
 {

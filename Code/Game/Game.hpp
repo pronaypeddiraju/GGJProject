@@ -7,6 +7,7 @@ class Texture;
 class BitmapFont;
 class SpriteAnimDefenition;
 class Image;
+class DecisionSequence;
 
 class Game
 {
@@ -23,11 +24,17 @@ public:
 	void HandleKeyReleased( unsigned char keyCode );
 	void Render() const;
 	void PostRender();
+
+	void SplashSequence() const;
+
+
+	//Debug renders
 	void DebugRenderTextures() const;
 	void DebugRenderSprites() const;
 	void DebugRenderSpriteAnims() const;
 	void DebugRenderTextAlignment() const;
 	void DebugRender() const;
+	
 	void Update( float deltaTime );
 	void UpdateCamera( float deltaTime );
 	void ClearGarbageEntities();
@@ -39,16 +46,14 @@ private:
 	bool m_isGameAlive = false;
 	bool m_consoleDebugOnce = false;
 
+	DecisionSequence* m_decisionSequence = nullptr;
+
 public:
-	SoundID m_testAudioID = NULL;
-	SoundPlaybackID m_testPlayback  = NULL;
-	Texture* m_textureTest = nullptr;
-	Texture* m_spriteTest = nullptr;
 	BitmapFont* m_squirrelFont = nullptr;
-	SpriteAnimDefenition* m_explosionPingPong = nullptr;
-	SpriteAnimDefenition* m_explosionOnce = nullptr;
-	SpriteAnimDefenition* m_explosionLoop = nullptr;
-	Texture* m_explosionTexture = nullptr;
-	Image* m_testImage = nullptr;
 	float m_animTime = 0.f;
+
+	bool m_splashEnabled = true;
+	bool m_gameCompletedState = false;
+	bool m_gameInitiated = false;
+
 };

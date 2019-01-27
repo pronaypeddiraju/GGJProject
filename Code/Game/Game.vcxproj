@@ -189,6 +189,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="DataDriver\DataDriver.cpp" />
+    <ClCompile Include="DecisionSequence.cpp" />
+    <ClCompile Include="Decisions\Decisions.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main_Windows.cpp">
@@ -200,6 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="DataDriver\DataDriver.hpp" />
+    <ClInclude Include="DecisionSequence.hpp" />
+    <ClInclude Include="Decisions\Decisions.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="Game.hpp" />
