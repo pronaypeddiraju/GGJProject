@@ -26,11 +26,17 @@ public:
 	void ShowFoodDecisions() const;
 	void GameCompleteSequence() const;
 
+	bool CheckWinState() const;
+	void CheckSleepHours();
 private:
 	BitmapFont*							m_printFont = nullptr;
 	int									m_sequenceStep = 0;
 	Rgba								m_HUDBaseBoxColor = Rgba::GREY;
+	Vec2								m_spriteUVmins = Vec2(1.f, 0.f);
+	Vec2								m_spriteUVmaxs = Vec2(0.f, 1.f);
+	bool								m_flipSprite = false;
 
+	float								m_pulseValue = 0.f;
 
 	Texture*							m_workTexture = nullptr;
 	Texture*							m_chillTexture = nullptr;

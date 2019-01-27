@@ -4,6 +4,7 @@
 #include "Game/Decisions/Decisions.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Core/Time.hpp"
 
 RandomNumberGenerator* g_rng = nullptr;
 
@@ -24,6 +25,9 @@ DecisionSequence::~DecisionSequence()
 
 void DecisionSequence::UpdateDS(float deltaSeconds)
 {
+	float time = GetCurrentTimeSeconds();
+	m_pulseValue = (sin(time) + 1.f) * 0.5f;
+
 	//Update decision sequence here
 	if(WORK_HOURS_COMPLETED + POST_HOURS_COMPLETED + FOOD_HOURS_COMPLETED > MAX_HOURS)
 	{
@@ -192,6 +196,7 @@ void DecisionSequence::RenderHUD() const
 	case 1:
 	//Work
 	g_renderContext->BindTexture(m_workTexture);
+
 	break;
 	case 2:
 	//Chill
@@ -201,8 +206,21 @@ void DecisionSequence::RenderHUD() const
 	//Food
 	g_renderContext->BindTexture(m_foodTexture);
 	break;
+	case 4:
+	//Completed
+	g_renderContext->BindTexture(m_chillTexture);
+	break;
 	}
-	AddVertsForAABB2D(textureVerts, m_characterBox, Rgba::WHITE);
+
+	if(m_flipSprite)
+	{
+		AddVertsForAABB2D(textureVerts, m_characterBox, Rgba::WHITE, m_spriteUVmins, m_spriteUVmaxs);
+	}
+	else
+	{
+		AddVertsForAABB2D(textureVerts, m_characterBox, Rgba::WHITE);
+	}
+	
 	g_renderContext->DrawVertexArray(textureVerts);
 	
 }
@@ -349,6 +367,10 @@ void DecisionSequence::HandleKeyPressed( unsigned char keyCode )
 		m_sequenceStep++;
 		GetNumOptions();
 		m_canProceed = false;
+		if(m_sequenceStep == 4)
+		{
+			CheckSleepHours();
+		}
 	}
 	else
 	{
@@ -377,9 +399,14 @@ void DecisionSequence::PerformDecision()
 	//select the option in the food decisions
 	PerformFoodDecision();
 	break;
+	case 4:
+	return;
+	break;
 	default:
 	break;
 	}
+
+	m_flipSprite = !m_flipSprite;
 }
 
 void DecisionSequence::PerformWorkDecision()
@@ -610,9 +637,105 @@ void DecisionSequence::GameCompleteSequence() const
 	//Display HUD in the bottom of the screen as usual
 	RenderHUD();
 
-	//based on game state, display win message
-	//if 6 hours sleep, reduce guilt by 20?
+	std::vector<Vertex_PCU> textVerts;
 
+	//Header
+	m_printFont->AddVertsForTextInBox2D(textVerts, m_headerBox, 3.f, "THE DAY HAS ENDED", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED);
 
+	std::string decisionString;
+
+	if(MAX_HOURS - WORK_HOURS_COMPLETED - POST_HOURS_COMPLETED - FOOD_HOURS_COMPLETED >= 6)
+	{
+		//WE had 6+ hours of sleep
+		decisionString = "You had 6 or more hours of sleep. You gained 20 Joy and lost 20 Guilt";
+	}
+	else
+	{
+		//Sleep was short
+		decisionString = "You less than 6 hours of sleep. You lost 20 Joy and gained 20 Guilt";
+	}
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart), Vec2(180.f, m_yBoxEnd)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+	bool winState = CheckWinState();
+	if(winState)
+	{
+		//You won the game!
+		decisionString = "You completed the day with the following conditions met:";
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart - 5.f), Vec2(180.f, m_yBoxEnd - 5.f)), m_fontCellSize, decisionString, Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+		
+		decisionString = "More than $50 in Cash, More than 80 Happiness and less than 20 Guilt";
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart - 10.f), Vec2(180.f, m_yBoxEnd - 10.f)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		decisionString = "You WIN the game! 24 hours in Manali well spent!";
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart - 25.f), Vec2(180.f, m_yBoxEnd - 25.f)), m_fontCellSize * 2, decisionString, Rgba::GREEN, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, m_pulseValue * 2.0f);   
+	}
+	else
+	{
+		//Lost the game
+		//You won the game!
+		decisionString = "You completed the day with the following conditions failed:";
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart - 5.f), Vec2(180.f, m_yBoxEnd - 5.f)), m_fontCellSize, decisionString, Rgba::RED, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		decisionString = "More than $50 in Cash, More than 80 Happiness and less than 20 Guilt";
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart - 10.f), Vec2(180.f, m_yBoxEnd - 10.f)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		decisionString = "You lost the game! 24 hours in Manali spent poorly!";
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart - 25.f), Vec2(180.f, m_yBoxEnd - 20.f)), m_fontCellSize * 2, decisionString, Rgba::RED, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, m_pulseValue * 2.0f);   
+	}
+
+	decisionString = "Press F8 to RESTART the game";
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, 25.f), Vec2(180.f, 30.f)), m_fontCellSize, decisionString, Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+	g_renderContext->BindTexture(m_printFont->GetTexture());
+	g_renderContext->DrawVertexArray(textVerts);
+
+	RenderHUD();
 }
 
+bool DecisionSequence::CheckWinState() const
+{
+	if(WEALTH > 50 && GUILT_LEVEL < 20 && HAPPINESS_LEVEL > 80)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
+}
+
+void DecisionSequence::CheckSleepHours()
+{
+	//based on game state, display win message
+	//if 6 hours sleep, reduce guilt by 20?
+	int sleepHours = MAX_HOURS - WORK_HOURS_COMPLETED - POST_HOURS_COMPLETED - FOOD_HOURS_COMPLETED;
+	if(sleepHours >= 6)
+	{
+		HAPPINESS_LEVEL += 20;
+		GUILT_LEVEL -= 20;
+	}
+	else
+	{
+		HAPPINESS_LEVEL -= 20;
+		GUILT_LEVEL -= 20;
+	}
+
+	if(GUILT_LEVEL < 0)
+	{
+		GUILT_LEVEL = 0;
+	}
+	else if(GUILT_LEVEL > 100)
+	{
+		GUILT_LEVEL = 100;
+	}
+
+	if(HAPPINESS_LEVEL > 100)
+	{
+		HAPPINESS_LEVEL = 100;
+	}
+	else if(HAPPINESS_LEVEL < 0)
+	{
+		HAPPINESS_LEVEL = 0;
+	}
+}
