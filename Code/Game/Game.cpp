@@ -14,6 +14,7 @@
 #include "Engine/Core/EventSystems.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Game/DecisionSequence.hpp"
+#include "Game/DataDriver/DataDriver.hpp"
 
 //Create Camera and set to null 
 Camera *g_mainCamera = nullptr; 
@@ -32,6 +33,12 @@ Game::Game()
 	m_squirrelFont = g_renderContext->CreateOrGetBitmapFontFromFile("SquirrelFixedFont");
 
 	g_devConsole->SetBitmapFont(*m_squirrelFont);
+
+	//Call the decision driver methods to load all decisions from XML
+	m_dataDriver = new DataDriver();
+	m_dataDriver->LoadWorkDecisionData();
+	m_dataDriver->LoadPostWorkDecisionData();
+	m_dataDriver->LoadFoodDecisionData();
 }
 
 Game::~Game()
@@ -58,6 +65,12 @@ void Game::HandleKeyPressed(unsigned char keyCode)
 	switch( keyCode )
 	{
 	case UP_ARROW:
+	case DOWN_ARROW:
+	if(m_gameInitiated)
+	{
+		m_decisionSequence->HandleKeyPressed(keyCode);
+	}
+	break;
 	case RIGHT_ARROW:
 	case LEFT_ARROW:
 	case SPACE_KEY:
@@ -79,15 +92,16 @@ void Game::HandleKeyPressed(unsigned char keyCode)
 	case F7_KEY:
 	break;
 	case ENTER_KEY:
-	if(m_animTime > 2.0f)
+	if(m_animTime > 2.0f && !m_gameInitiated)
 	{
 		m_gameInitiated = true;
 		m_splashEnabled = false;
 		m_decisionSequence = new DecisionSequence();
 	}
-	else
+	else if(m_gameInitiated)
 	{
-		//Do nothing here
+		//Send the event to DecisionSequence
+		m_decisionSequence->HandleKeyPressed(keyCode);
 	}
 	break;
 	default:

@@ -6,7 +6,7 @@ STATIC std::map<int, Decision*>		Decision::s_foodDecisions;
 
 Decision::Decision( XMLElement& decisionEntry )
 {
-	m_decisionID = ParseXmlAttribute(decisionEntry, "ID", -1);
+	m_decisionID = ParseXmlAttribute(decisionEntry, "ID", m_decisionID);
 	m_decisionString = ParseXmlAttribute(decisionEntry, "decision", m_decisionString);
 	m_decisionHours = ParseXmlAttribute(decisionEntry, "hours", m_decisionHours);
 	m_decisionWealth = ParseXmlAttribute(decisionEntry, "wealth", m_decisionWealth);
@@ -22,7 +22,7 @@ Decision::~Decision()
 
 int Decision::GetDecisionID()
 {
-	if(m_decisionID)
+	if(m_decisionID == 0)
 	{
 		ERROR_AND_DIE("The decision ID was 0");
 	}
@@ -32,3 +32,12 @@ int Decision::GetDecisionID()
 	}
 }
 
+const std::string& Decision::GetDecisionString() const
+{
+	return m_decisionString;
+}
+
+const Rgba& Decision::GetDecisionColor() const
+{
+	return m_decisionColor;
+}

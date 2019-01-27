@@ -8,6 +8,7 @@ class BitmapFont;
 class SpriteAnimDefenition;
 class Image;
 class DecisionSequence;
+class DataDriver;
 
 class Game
 {
@@ -47,6 +48,7 @@ private:
 	bool m_consoleDebugOnce = false;
 
 	DecisionSequence* m_decisionSequence = nullptr;
+	DataDriver* m_dataDriver = nullptr;
 
 public:
 	BitmapFont* m_squirrelFont = nullptr;
