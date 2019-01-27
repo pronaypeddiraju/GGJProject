@@ -60,8 +60,8 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 			{
 			case KEY_ESC:
 				//Shut the app
-				g_theApp->HandleQuitRequested();
-				return 0;
+				//g_theApp->HandleQuitRequested();
+				//return 0;
 			case T_KEY :
 			case P_KEY :
 			case UP_ARROW:

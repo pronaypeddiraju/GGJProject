@@ -71,7 +71,9 @@ private:
 	AABB2								m_guiltBarBack= AABB2(Vec2(80.f, 1.f), Vec2(180.f, 4.5f));
 	AABB2								m_guiltBar = AABB2(Vec2(80.f, 1.f), Vec2(180.f, 4.5f));
 
-	AABB2								m_characterBox = AABB2(Vec2(20.f, 0.5f), Vec2(40.f, 19.5f));
+	AABB2								m_characterBox = AABB2(Vec2(30.f, 0.5f), Vec2(50.f, 19.5f));
+	AABB2								m_restartBox = AABB2(Vec2(10.f, 5.f),Vec2(20.f, 20.f));
+	AABB2								m_restartKeyBox = AABB2(Vec2(10.f, 0.f),Vec2(20.f,10.f));
 
 	float								m_yBoxStart = 65.f;
 	float								m_yBoxEnd = 70.f;

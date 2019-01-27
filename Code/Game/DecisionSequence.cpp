@@ -25,7 +25,8 @@ DecisionSequence::~DecisionSequence()
 
 void DecisionSequence::UpdateDS(float deltaSeconds)
 {
-	float time = GetCurrentTimeSeconds();
+	UNUSED(deltaSeconds);
+	float time = static_cast<float>(GetCurrentTimeSeconds());
 	m_pulseValue = (sin(time) + 1.f) * 0.5f;
 
 	//Update decision sequence here
@@ -45,7 +46,10 @@ void DecisionSequence::GameOverScene() const
 {
 	std::vector<Vertex_PCU> fontVerts;
 
-	m_printFont->AddVertsForTextInBox2D(fontVerts, AABB2(Vec2(25.f, 45.f), Vec2(175.f, 55.f)), 10.f, "GAME OVER!", Rgba::RED);
+	m_printFont->AddVertsForTextInBox2D(fontVerts, AABB2(Vec2(25.f, 45.f), Vec2(175.f, 55.f)), 10.f, "GAME OVER!", Rgba::RED, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, m_pulseValue * 2.f);
+
+	m_printFont->AddVertsForTextInBox2D(fontVerts, AABB2(Vec2(20.f, 30.f), Vec2(180.f, 35.f)), m_fontCellSize, "You exhausted your 24 hours without any sleep! You're F@*king crazy dude!", Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+	m_printFont->AddVertsForTextInBox2D(fontVerts, AABB2(Vec2(20.f, 25.f), Vec2(180.f, 30.f)), m_fontCellSize, "Press F8 to RESTART the game", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
 
 	g_renderContext->BindTexture(m_printFont->GetTexture());
 	g_renderContext->DrawVertexArray(fontVerts);
@@ -115,8 +119,28 @@ void DecisionSequence::RenderInfoScreen() const
 {
 	//Pre-Game start info screen to display lore and info about decisions
 	std::vector<Vertex_PCU>	textVerts;
-	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(25.f,45.f), Vec2(175.f, 55.f)), 2.f, "Info Screen", Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	
+	m_printFont->AddVertsForTextInBox2D(textVerts, m_headerBox, 3.f, "24 Hours in Manali", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED);
 
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, 80.f) , Vec2(180.f, 85.f)), m_fontCellSize, "Lore:", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 75.f) , Vec2(200.f, 78.f)), 2.f, "You live in the town of Manali in India. A place so beautiful, words can't do justice", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 72.f) , Vec2(200.f, 75.f)), 2.f, "But just like any other town, you can do a lot of things here. Legal and Illegal", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 69.f) , Vec2(200.f, 72.f)), 2.f, "You are to live 24 hours in this town and perform 4 activities: work, chill, eat and sleep", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 66.f) , Vec2(200.f, 69.f)), 2.f, "Each activity takes up time and rewards you with cash and joy if legal", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 63.f) , Vec2(200.f, 66.f)), 2.f, "Illegal activities marked in RED gives you more cash and more joy but builds up guilt", Rgba::RED, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 60.f) , Vec2(200.f, 63.f)), 2.f, "Choose wisely among your options and spend your 24 hours in Manali to finish the game", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, 50.f) , Vec2(180.f, 55.f)), m_fontCellSize, "What to consider while making decisions:", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 47.f) , Vec2(200.f, 50.f)), 2.f, "Legal decisions are marked in White (Low payout and joy but no guilt)", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 45.f) , Vec2(200.f, 47.f)), 2.f, "Illegal decisions are marked in Red (High payout and joy but also guilt)", Rgba::RED, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 42.f) , Vec2(200.f, 45.f)), 2.f, "6 or more hours of sleep add 20 Joy and reduce 20 Guilt", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 39.f) , Vec2(200.f, 42.f)), 2.f, "Less than 6 hours of sleep add 20 Guilt and reduce 20 Joy", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, 30.f) , Vec2(180.f, 35.f)), m_fontCellSize, "How to WIN:", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 27.f) , Vec2(200.f, 30.f)), 2.f, "End your 24 hours with $50 or more, 80 or more Joy and 20 or less Guilt", Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 25.f) , Vec2(200.f, 27.f)), 2.f, "Make your decisions wisely", Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, 1.f);
+
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, 10.f) , Vec2(180.f, 20.f)), m_fontCellSize, "(Press Enter to Start!)", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 999999, m_pulseValue * 2.f);
 
 	g_renderContext->BindTexture(m_printFont->GetTexture());
 	g_renderContext->DrawVertexArray(textVerts);
@@ -137,6 +161,9 @@ void DecisionSequence::RenderHUD() const
 	//Draw the heading
 	std::vector<Vertex_PCU> textVerts;
 	
+	m_printFont->AddVertsForTextInBox2D(textVerts, m_restartBox, m_fontCellSize, "RESTART", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED);
+	m_printFont->AddVertsForTextInBox2D(textVerts, m_restartKeyBox, m_fontCellSize, "F8", Rgba::YELLOW, 1.f, Vec2::ALIGN_TOP_CENTERED);
+
 	//Work hours
 	m_printFont->AddVertsForTextInBox2D(textVerts, m_workHoursTextBox, m_fontCellSize, "Work", Rgba::YELLOW);
 	m_printFont->AddVertsForTextInBox2D(textVerts, m_workHoursBox, m_cellSize, std::to_string(WORK_HOURS_COMPLETED), Rgba::WHITE);
@@ -184,7 +211,6 @@ void DecisionSequence::RenderHUD() const
 	AABB2 guiltBar = m_guiltBar;
 	guiltBar.m_maxBounds.x = guiltBar.m_minBounds.x + actualBarMax;
 	AddVertsForAABB2D(barVerts, guiltBar, Rgba::RED);
-
 	g_renderContext->DrawVertexArray(barVerts);
 
 	g_renderContext->BindTexture(m_printFont->GetTexture());
@@ -196,7 +222,6 @@ void DecisionSequence::RenderHUD() const
 	case 1:
 	//Work
 	g_renderContext->BindTexture(m_workTexture);
-
 	break;
 	case 2:
 	//Chill
@@ -220,7 +245,7 @@ void DecisionSequence::RenderHUD() const
 	{
 		AddVertsForAABB2D(textureVerts, m_characterBox, Rgba::WHITE);
 	}
-	
+
 	g_renderContext->DrawVertexArray(textureVerts);
 	
 }
@@ -275,8 +300,11 @@ void DecisionSequence::ShowWorkDecisions() const
 		//Print Payout range
 		IntRange pay = Decision::s_workDecisions[decisionIndex + 1]->m_decisionWealth;
 		decisionString = std::to_string(pay.minInt);
-		decisionString.append( " to ");
-		decisionString.append(std::to_string(pay.maxInt));
+		if(pay.minInt != pay.maxInt)
+		{
+			decisionString.append( " to ");
+			decisionString.append(std::to_string(pay.maxInt));
+		}
 		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(130.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(150.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
 		
 		//Print Joy
@@ -343,16 +371,28 @@ void DecisionSequence::HandleKeyPressed( unsigned char keyCode )
 	break;
 	case DOWN_ARROW:
 	//Down
-	if(m_selectionID < m_currentOptionSet - 2)
+	if(!m_canProceed)
 	{
-		m_selectionID++;
+		if(m_selectionID < m_currentOptionSet - 2)
+		{
+			m_selectionID++;
+		}
 	}
-
+	else
+	{
+		if(m_selectionID < m_currentOptionSet - 1)
+		{
+			m_selectionID++;
+		}
+	}
+	/*
 	if(m_selectionID == m_currentOptionSet - 2 && m_canProceed)
 	{
 		m_selectionID = m_currentOptionSet - 1;
 		//DrawProceedTriangle();
 	}
+	*/
+
 	break;
 	case ENTER_KEY:
 	//Selection
@@ -444,14 +484,26 @@ void DecisionSequence::PerformPostDecision()
 {
 	IntRange wealthRange = Decision::s_postWorkDecisions[m_selectionID + 1]->m_decisionWealth;
 	
-	wealthRange.minInt *= -1;
-	wealthRange.maxInt *= -1;
+	if(wealthRange.minInt < 0 && wealthRange.maxInt > 0)
+	{
+		//-ve to +ve wealth
+		wealthRange.maxInt = wealthRange.maxInt - wealthRange.minInt;
+		wealthRange.minInt *= -1;
 
-	int wealth = g_rng->GetRandomIntInRange(wealthRange.minInt, wealthRange.maxInt);
+		int wealth = g_rng->GetRandomIntInRange(wealthRange.minInt, wealthRange.maxInt);
+		WEALTH -= wealth;
+	}
+	else
+	{
+		//Normal range handling
+		wealthRange.minInt *= -1;
+		wealthRange.maxInt *= -1;
+
+		int wealth = g_rng->GetRandomIntInRange(wealthRange.minInt, wealthRange.maxInt);
+		WEALTH -= wealth;
+	}
 
 	POST_HOURS_COMPLETED += Decision::s_postWorkDecisions[m_selectionID + 1]->m_decisionHours;
-
-	WEALTH -= wealth;
 	HAPPINESS_LEVEL += Decision::s_postWorkDecisions[m_selectionID + 1]->m_decisionHappiness;
 
 	if(HAPPINESS_LEVEL > 100)
@@ -525,8 +577,12 @@ void DecisionSequence::ShowPostWorkDecisions() const
 		//Print Payout range
 		IntRange pay = Decision::s_postWorkDecisions[decisionIndex + 1]->m_decisionWealth;
 		decisionString = std::to_string(pay.minInt);
-		decisionString.append( " to ");
-		decisionString.append(std::to_string(pay.maxInt));
+		if(pay.minInt != pay.maxInt)
+		{
+			decisionString.append( " to ");
+			decisionString.append(std::to_string(pay.maxInt));
+
+		}
 		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(130.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(150.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
 
 		//Print Joy
@@ -591,8 +647,12 @@ void DecisionSequence::ShowFoodDecisions() const
 		//Print Payout range
 		IntRange pay = Decision::s_foodDecisions[decisionIndex + 1]->m_decisionWealth;
 		decisionString = std::to_string(pay.minInt);
-		decisionString.append( " to ");
-		decisionString.append(std::to_string(pay.maxInt));
+		if(pay.minInt != pay.maxInt)
+		{
+			decisionString.append( " to ");
+			decisionString.append(std::to_string(pay.maxInt));
+
+		}
 		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(130.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(150.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
 
 		//Print Joy
@@ -694,7 +754,7 @@ void DecisionSequence::GameCompleteSequence() const
 
 bool DecisionSequence::CheckWinState() const
 {
-	if(WEALTH > 50 && GUILT_LEVEL < 20 && HAPPINESS_LEVEL > 80)
+	if(WEALTH >= 50 && GUILT_LEVEL <= 20 && HAPPINESS_LEVEL >= 80)
 	{
 		return true;
 	}
