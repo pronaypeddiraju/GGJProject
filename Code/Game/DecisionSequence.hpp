@@ -21,13 +21,20 @@ public:
 	void PerformDecision();
 	void PerformWorkDecision();
 	void PerformPostDecision();
+	void PerformFoodDecision();
 	void ShowPostWorkDecisions() const;
 	void ShowFoodDecisions() const;
+	void GameCompleteSequence() const;
 
 private:
 	BitmapFont*							m_printFont = nullptr;
 	int									m_sequenceStep = 0;
 	Rgba								m_HUDBaseBoxColor = Rgba::GREY;
+
+
+	Texture*							m_workTexture = nullptr;
+	Texture*							m_chillTexture = nullptr;
+	Texture*							m_foodTexture = nullptr;
 
 	AABB2								m_headerBox = AABB2(Vec2(40.f, 80.f),Vec2(160.f, 100.f));
 	AABB2								m_ProceedBox = AABB2(Vec2(40.f, 20.f),Vec2(160.f, 30.f));
@@ -58,6 +65,7 @@ private:
 	AABB2								m_guiltBarBack= AABB2(Vec2(80.f, 1.f), Vec2(180.f, 4.5f));
 	AABB2								m_guiltBar = AABB2(Vec2(80.f, 1.f), Vec2(180.f, 4.5f));
 
+	AABB2								m_characterBox = AABB2(Vec2(20.f, 0.5f), Vec2(40.f, 19.5f));
 
 	float								m_yBoxStart = 65.f;
 	float								m_yBoxEnd = 70.f;

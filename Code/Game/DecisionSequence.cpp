@@ -11,6 +11,10 @@ DecisionSequence::DecisionSequence()
 {
 	m_printFont = g_renderContext->CreateOrGetBitmapFontFromFile("SquirrelFixedFont");
 	g_rng = new RandomNumberGenerator();
+
+	m_workTexture = g_renderContext->CreateOrGetTextureFromFile("Data/Images/WorkCostume.png");
+	m_chillTexture = g_renderContext->CreateOrGetTextureFromFile("Data/Images/ChillCostume.png");
+	m_foodTexture = g_renderContext->CreateOrGetTextureFromFile("Data/Images/FoodCostume.png");
 }
 
 DecisionSequence::~DecisionSequence()
@@ -90,6 +94,13 @@ void DecisionSequence::Render() const
 	break;
 	case 3:
 	//Render food decisions
+	ShowFoodDecisions();
+	RenderHUD();
+	DrawSelectionTriangle();
+	break;
+	case 4:
+	//Completed Screen
+	GameCompleteSequence();
 	break;
 	default:
 	break;
@@ -174,6 +185,25 @@ void DecisionSequence::RenderHUD() const
 
 	g_renderContext->BindTexture(m_printFont->GetTexture());
 	g_renderContext->DrawVertexArray(textVerts);
+
+	std::vector<Vertex_PCU> textureVerts;
+	switch (m_sequenceStep)
+	{
+	case 1:
+	//Work
+	g_renderContext->BindTexture(m_workTexture);
+	break;
+	case 2:
+	//Chill
+	g_renderContext->BindTexture(m_chillTexture);
+	break;
+	case 3:
+	//Food
+	g_renderContext->BindTexture(m_foodTexture);
+	break;
+	}
+	AddVertsForAABB2D(textureVerts, m_characterBox, Rgba::WHITE);
+	g_renderContext->DrawVertexArray(textureVerts);
 	
 }
 
@@ -345,6 +375,7 @@ void DecisionSequence::PerformDecision()
 	break;
 	case 3:
 	//select the option in the food decisions
+	PerformFoodDecision();
 	break;
 	default:
 	break;
@@ -402,6 +433,36 @@ void DecisionSequence::PerformPostDecision()
 		HAPPINESS_LEVEL = 0;
 
 	GUILT_LEVEL += Decision::s_postWorkDecisions[m_selectionID + 1]->m_decisionGuilt;
+
+	if(GUILT_LEVEL > 100)
+		GUILT_LEVEL = 100;
+	if(GUILT_LEVEL < 0)
+		GUILT_LEVEL = 0;
+
+	m_selectionID = 0;
+	m_canProceed = true;
+}
+
+void DecisionSequence::PerformFoodDecision()
+{
+	IntRange wealthRange = Decision::s_foodDecisions[m_selectionID + 1]->m_decisionWealth;
+
+	wealthRange.minInt *= -1;
+	wealthRange.maxInt *= -1;
+
+	int wealth = g_rng->GetRandomIntInRange(wealthRange.minInt, wealthRange.maxInt);
+
+	FOOD_HOURS_COMPLETED += Decision::s_foodDecisions[m_selectionID + 1]->m_decisionHours;
+
+	WEALTH -= wealth;
+	HAPPINESS_LEVEL += Decision::s_foodDecisions[m_selectionID + 1]->m_decisionHappiness;
+
+	if(HAPPINESS_LEVEL > 100)
+		HAPPINESS_LEVEL = 100;
+	if(HAPPINESS_LEVEL < 0)
+		HAPPINESS_LEVEL = 0;
+
+	GUILT_LEVEL += Decision::s_foodDecisions[m_selectionID + 1]->m_decisionGuilt;
 
 	if(GUILT_LEVEL > 100)
 		GUILT_LEVEL = 100;
@@ -476,5 +537,82 @@ void DecisionSequence::ShowPostWorkDecisions() const
 
 	g_renderContext->BindTexture(m_printFont->GetTexture());
 	g_renderContext->DrawVertexArray(textVerts);
+}
+
+void DecisionSequence::ShowFoodDecisions() const
+{
+	int numDecisions = static_cast<int>(Decision::s_foodDecisions.size());
+
+	std::vector<Vertex_PCU> textVerts;
+
+	//Header
+	m_printFont->AddVertsForTextInBox2D(textVerts, m_headerBox, 3.f, "GRAB SOME GRUB", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED);
+	PrintDecisionHeader();
+
+	//Decisions
+	for(int decisionIndex = 0; decisionIndex < numDecisions - 1; decisionIndex++)
+	{
+		//Print decision
+		std::string decisionString = Decision::s_foodDecisions[decisionIndex + 1]->GetDecisionString();
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(110.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, Decision::s_foodDecisions[decisionIndex + 1]->GetDecisionColor(), 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		//Print hours
+		int hours = Decision::s_foodDecisions[decisionIndex + 1]->m_decisionHours;
+		decisionString = std::to_string(hours);
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(110.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(130.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		//Print Payout range
+		IntRange pay = Decision::s_foodDecisions[decisionIndex + 1]->m_decisionWealth;
+		decisionString = std::to_string(pay.minInt);
+		decisionString.append( " to ");
+		decisionString.append(std::to_string(pay.maxInt));
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(130.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(150.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		//Print Joy
+		int happiness = Decision::s_foodDecisions[decisionIndex + 1]->m_decisionHappiness;
+		decisionString = std::to_string(happiness);
+		Rgba color;
+		if(happiness > 0)
+		{
+			color = Rgba::WHITE;
+		}
+		else
+		{
+			color = Rgba::RED;
+		}
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(150.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(170.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, color, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		//Print Guilt
+		int guilt = Decision::s_foodDecisions[decisionIndex + 1]->m_decisionGuilt;
+		decisionString = std::to_string(guilt);
+		if(guilt <= 0)
+		{
+			color = Rgba::WHITE;
+		}
+		else
+		{
+			color = Rgba::RED;
+		}
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(170.f, m_yBoxStart - decisionIndex * m_cellSize), Vec2(190.f, m_yBoxEnd - decisionIndex * m_cellSize)), m_fontCellSize, decisionString, color, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+	}
+
+	if(m_canProceed)
+	{
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, 25.f), Vec2(110, 30.f)), m_fontCellSize, Decision::s_foodDecisions[numDecisions]->m_decisionString, Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
+	}
+
+	g_renderContext->BindTexture(m_printFont->GetTexture());
+	g_renderContext->DrawVertexArray(textVerts);
+}
+
+void DecisionSequence::GameCompleteSequence() const
+{
+	//Display HUD in the bottom of the screen as usual
+	RenderHUD();
+
+	//based on game state, display win message
+	//if 6 hours sleep, reduce guilt by 20?
+
+
 }
 
