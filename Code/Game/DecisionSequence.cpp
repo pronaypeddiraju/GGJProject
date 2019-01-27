@@ -92,19 +92,57 @@ void DecisionSequence::ShowWorkDecisions() const
 
 	//Header
 	m_printFont->AddVertsForTextInBox2D(textVerts, m_headerBox, 3.f, "TIME TO WORK", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED);
-	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, 75.f), Vec2(90, 80.f)), 3.f, "Job options", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
-	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(90.f, 75.f), Vec2(120.f, 80.f)), 3.f, " Hours", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
-	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(120.f, 75.f), Vec2(140.f, 80.f)), 3.f, " Pay", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
-	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(140.f, 75.f), Vec2(170.f, 80.f)), 3.f, " Joy", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
-	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(170.f, 75.f), Vec2(200.f, 80.f)), 3.f, " Guilt", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(30.f, 75.f), Vec2(110, 80.f)), 3.f, "Job options", Rgba::YELLOW, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(110.f, 75.f), Vec2(130.f, 80.f)), 3.f, " Hours", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(130.f, 75.f), Vec2(150.f, 80.f)), 3.f, " Pay", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(150.f, 75.f), Vec2(170.f, 80.f)), 3.f, " Joy", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
+	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(170.f, 75.f), Vec2(190.f, 80.f)), 3.f, " Guilt", Rgba::YELLOW, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);
 
 	//Decisions
 	for(int decisionIndex = 0; decisionIndex < numDecisions; decisionIndex++)
 	{
+		//Print decision
 		std::string decisionString = Decision::s_workDecisions[decisionIndex + 1]->GetDecisionString();
-		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(10.f, m_yBoxStart - decisionIndex * 4.f), Vec2(90.f, m_yBoxEnd - decisionIndex * 4.f)), 2.f, decisionString, Decision::s_workDecisions[decisionIndex + 1]->GetDecisionColor(), 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
-		decisionString = Decision::s_workDecisions[decisionIndex + 1]->m_decisionHours;
-		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(90.f, m_yBoxStart - decisionIndex * 4.f), Vec2(120.f, m_yBoxEnd - decisionIndex * 4.f)), 2.f, decisionString, Decision::s_workDecisions[decisionIndex + 1]->GetDecisionColor(), 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(30.f, m_yBoxStart - decisionIndex * 4.f), Vec2(110.f, m_yBoxEnd - decisionIndex * 4.f)), 2.f, decisionString, Decision::s_workDecisions[decisionIndex + 1]->GetDecisionColor(), 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+		
+		//Print hours
+		int hours = Decision::s_workDecisions[decisionIndex + 1]->m_decisionHours;
+		decisionString = std::to_string(hours);
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(110.f, m_yBoxStart - decisionIndex * 4.f), Vec2(130.f, m_yBoxEnd - decisionIndex * 4.f)), 2.f, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+		
+		//Print Payout range
+		IntRange pay = Decision::s_workDecisions[decisionIndex + 1]->m_decisionWealth;
+		decisionString = std::to_string(pay.minInt);
+		decisionString.append( "-");
+		decisionString.append(std::to_string(pay.maxInt));
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(130.f, m_yBoxStart - decisionIndex * 4.f), Vec2(150.f, m_yBoxEnd - decisionIndex * 4.f)), 2.f, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+		
+		//Print Joy
+		int happiness = Decision::s_workDecisions[decisionIndex + 1]->m_decisionHappiness;
+		decisionString = std::to_string(happiness);
+		Rgba color;
+		if(happiness > 0)
+		{
+			color = Rgba::WHITE;
+		}
+		else
+		{
+			color = Rgba::RED;
+		}
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(150.f, m_yBoxStart - decisionIndex * 4.f), Vec2(170.f, m_yBoxEnd - decisionIndex * 4.f)), 2.f, decisionString, color, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
+
+		//Print Guilt
+		int guilt = Decision::s_workDecisions[decisionIndex + 1]->m_decisionGuilt;
+		decisionString = std::to_string(guilt);
+		if(guilt <= 0)
+		{
+			color = Rgba::WHITE;
+		}
+		else
+		{
+			color = Rgba::RED;
+		}
+		m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(170.f, m_yBoxStart - decisionIndex * 4.f), Vec2(190.f, m_yBoxEnd - decisionIndex * 4.f)), 2.f, decisionString, color, 1.f, Vec2::ALIGN_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
 	}
 
 	g_renderContext->BindTexture(m_printFont->GetTexture());
