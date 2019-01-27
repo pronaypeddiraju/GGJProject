@@ -15,11 +15,12 @@ public:
 	
 	void RenderHUD() const;
 	void DrawSelectionTriangle() const;
-	void LoadNextSequence();
 	void ShowWorkDecisions() const;
+	void PrintDecisionHeader() const;
 	void HandleKeyPressed( unsigned char keyCode );
 	void PerformDecision();
 	void PerformWorkDecision();
+	void PerformPostDecision();
 	void ShowPostWorkDecisions() const;
 	void ShowFoodDecisions() const;
 
@@ -32,17 +33,30 @@ private:
 	AABB2								m_ProceedBox = AABB2(Vec2(40.f, 20.f),Vec2(160.f, 30.f));
 
 	//HUD Boxes
-	AABB2								m_workHoursTextBox = AABB2(Vec2(40.f, 15.f), Vec2(60.f, 20.f));
-	AABB2								m_workHoursBox = AABB2(Vec2(40.f, 10.f), Vec2(60.f, 15.f));
+	AABB2								m_workHoursTextBox = AABB2(Vec2(80.f, 15.f), Vec2(100.f, 20.f));
+	AABB2								m_workHoursBox = AABB2(Vec2(80.f, 10.f), Vec2(100.f, 15.f));
 
-	AABB2								m_chillHoursTextBox = AABB2(Vec2(60.f, 15.f), Vec2(80.f, 20.f));
-	AABB2								m_chillHoursBox = AABB2(Vec2(60.f, 10.f), Vec2(80.f, 15.f));
+	AABB2								m_chillHoursTextBox = AABB2(Vec2(100.f, 15.f), Vec2(120.f, 20.f));
+	AABB2								m_chillHoursBox = AABB2(Vec2(100.f, 10.f), Vec2(120.f, 15.f));
 
-	AABB2								m_foodHoursTextBox = AABB2(Vec2(80.f, 15.f), Vec2(100.f, 20.f));
-	AABB2								m_foodHoursBox = AABB2(Vec2(80.f, 10.f), Vec2(100.f, 15.f));
+	AABB2								m_foodHoursTextBox = AABB2(Vec2(120.f, 15.f), Vec2(140.f, 20.f));
+	AABB2								m_foodHoursBox = AABB2(Vec2(120.f, 10.f), Vec2(140.f, 15.f));
 
-	AABB2								m_sleepHoursTextBox = AABB2(Vec2(100.f, 15.f), Vec2(120.f, 20.f));
-	AABB2								m_sleepHoursBox = AABB2(Vec2(100.f, 10.f), Vec2(120.f, 15.f));
+	AABB2								m_sleepHoursTextBox = AABB2(Vec2(140.f, 15.f), Vec2(160.f, 20.f));
+	AABB2								m_sleepHoursBox = AABB2(Vec2(140.f, 10.f), Vec2(160.f, 15.f));
+
+	AABB2								m_wealthTextBox = AABB2(Vec2(160.f, 15.f), Vec2(180.f, 20.f));
+	AABB2								m_wealthBox = AABB2(Vec2(160.f, 10.f), Vec2(180.f, 15.f));
+
+	AABB2								m_happinessText = AABB2(Vec2(60.f, 5.5f),Vec2(80.f, 9.f));
+	AABB2								m_happinessValue = AABB2(Vec2(182.f, 5.5f),Vec2(200.f, 9.f));
+	AABB2								m_happinessBarBack= AABB2(Vec2(80.f, 5.5f), Vec2(180.f, 9.f));
+	AABB2								m_happinessBar = AABB2(Vec2(80.f, 5.5f), Vec2(180.f, 9.f));
+
+	AABB2								m_guiltText = AABB2(Vec2(60.f, 1.f),Vec2(80.f, 5.5f));
+	AABB2								m_guiltValue = AABB2(Vec2(182.f, 1.f),Vec2(200.f, 5.5f));
+	AABB2								m_guiltBarBack= AABB2(Vec2(80.f, 1.f), Vec2(180.f, 4.5f));
+	AABB2								m_guiltBar = AABB2(Vec2(80.f, 1.f), Vec2(180.f, 4.5f));
 
 
 	float								m_yBoxStart = 65.f;
