@@ -78,7 +78,7 @@ private:
 	float								m_yBoxStart = 65.f;
 	float								m_yBoxEnd = 70.f;
 
-	int									m_selectionID = 1;
+	int									m_selectionID = 0;
 	int									m_currentOptionSet = 0;
 	float								m_cellSize = 4.f;
 	float								m_fontCellSize = 2.0f;
