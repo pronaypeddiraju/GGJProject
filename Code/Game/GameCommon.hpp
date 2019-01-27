@@ -8,18 +8,6 @@ constexpr float WORLD_CENTER_X = WORLD_WIDTH / 2.f;
 constexpr float WORLD_CENTER_Y = WORLD_HEIGHT / 2.f;
 constexpr float SCREEN_ASPECT = 16.f/9.f;
 
-constexpr int WEALTH = 0;
-constexpr int MAX_HOURS = 0;
-constexpr int WORK_HOURS_COMPLETED = 0;
-constexpr int POST_HOURS_COMPLETED = 0;
-constexpr int FOOD_HOURS_COMPLETED = 0;
-constexpr int SLEEP_HOURS_COMPLETED = 0;
-
-constexpr int HAPPINESS_LEVEL = 80;
-constexpr int MAX_HAPPINESS = 100;
-constexpr int GUILT_LEVEL = 0;
-constexpr int MAX_GUILT = 0;
-
 constexpr float CAMERA_SHAKE_REDUCTION_PER_SECOND = 1.f;
 constexpr float MAX_SHAKE = 2.0f;
 
