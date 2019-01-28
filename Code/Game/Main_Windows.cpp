@@ -10,24 +10,15 @@
 //Purely for debugging
 #include <stdio.h>
 
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: Move this macro later to a more central place, e.g. Engine/Core/EngineCommon.hpp
-//
 #define UNUSED(x) (void)(x);
 #define KEY_UP 72
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: Move these constants to GameCommon.hpp or elsewhere
-// 
 constexpr float CLIENT_ASPECT = 2.0f; // We are requesting a 1:1 aspect (square) window area
 
 extern App* g_theApp;
 
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: Move each of these items to its proper place, once that place is established
-// 
 HWND g_hWnd = nullptr;							// ...becomes WindowContext::m_windowHandle
 HDC g_displayDeviceContext = nullptr;			// ...becomes WindowContext::m_displayContext
 HGLRC g_openGLRenderingContext = nullptr;		// ...becomes RenderContext::m_apiRenderingContext
@@ -36,9 +27,6 @@ const char* APP_NAME = "24 Hours in Manali";	// ...becomes ???
 //-----------------------------------------------------------------------------------------------
 // Handles Windows (Win32) messages/events; i.e. the OS is trying to tell us something happened.
 // This function is called by Windows whenever we ask it for notifications
-//
-// #SD1ToDo: We will move this function to a more appropriate place later on...
-//
 LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam )
 {
 	switch( wmMessageCode )
@@ -55,7 +43,6 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 		{
 			unsigned char asKey = (unsigned char) wParam;
 
-			// #SD1ToDo: Tell the Input system about this key-pressed event
 			switch( asKey )
 			{
 			case KEY_ESC:
@@ -131,9 +118,6 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: We will move this function to a more appropriate place later on...
-//
 void CreateOpenGLWindow( HINSTANCE applicationInstanceHandle, float clientAspect )
 {
 	// Define a window style/class

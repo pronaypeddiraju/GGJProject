@@ -31,7 +31,7 @@
 		ID = "4"
 		decision = "Go to the local baptist church to face God"
 		hours = "2"
-		wealth = "10"
+		wealth = "-10"
 		happiness = "50"
 		guilt = "-10"
 		color = "255,255,255,255"
@@ -50,7 +50,7 @@
 		decision = "Score weed from your plug and get lit!"
 		hours = "3"
 		wealth = "-20"
-		happiness = "80"
+		happiness = "60"
 		guilt = "30"
 		color = "255,0,0,255"
 	/>

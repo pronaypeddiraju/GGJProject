@@ -712,7 +712,7 @@ void DecisionSequence::GameCompleteSequence() const
 	else
 	{
 		//Sleep was short
-		decisionString = "You less than 6 hours of sleep. You lost 20 Joy and gained 20 Guilt";
+		decisionString = "You had less than 6 hours of sleep. You lost 20 Joy and gained 20 Guilt";
 	}
 	m_printFont->AddVertsForTextInBox2D(textVerts, AABB2(Vec2(20.f, m_yBoxStart), Vec2(180.f, m_yBoxEnd)), m_fontCellSize, decisionString, Rgba::WHITE, 1.f, Vec2::ALIGN_LEFT_CENTERED, TEXT_BOX_MODE_SHRINK, 9999999, 1.f);   
 
