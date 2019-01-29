@@ -778,7 +778,7 @@ void DecisionSequence::CheckSleepHours()
 	else
 	{
 		HAPPINESS_LEVEL -= 20;
-		GUILT_LEVEL -= 20;
+		GUILT_LEVEL += 20;
 	}
 
 	if(GUILT_LEVEL < 0)
