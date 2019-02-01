@@ -56,9 +56,9 @@
 	/>
 	<Decision
 		ID = "7"
-		decision = "Go to Denny's because you're life is pathetic"
+		decision = "Hunt trash can because you're life is pathetic"
 		hours = "2"
-		wealth = "-5"
+		wealth = "0"
 		happiness = "-40"
 		guilt = "-40"
 		color = "255,255,255,255"

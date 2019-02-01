@@ -210,11 +210,19 @@
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
+    <ClInclude Include="resource2.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Submodule\Engine\Code\Engine\Engine.vcxproj">
       <Project>{577c0342-4905-4333-a507-95b56070031a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ManaliGame2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Run\Data\Images\Leaf.ico" />
+    <Image Include="..\..\Run\Data\Images\Leaf.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

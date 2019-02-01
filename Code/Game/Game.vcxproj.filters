@@ -63,5 +63,13 @@
     <ClInclude Include="DecisionSequence.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
+    <ClInclude Include="resource2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ManaliGame2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Run\Data\Images\Leaf.ico" />
+    <Image Include="..\..\Run\Data\Images\Leaf.png" />
   </ItemGroup>
 </Project>
